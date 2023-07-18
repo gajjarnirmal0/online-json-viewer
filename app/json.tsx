@@ -1,10 +1,83 @@
-import JsonLegacy from "./json";
+"use client";
+import dynamic from "next/dynamic";
+// import Image from "next/image";
+import React, { useEffect, useState, Fragment } from "react";
+// import JSONTree from "react-json-view";
+const ReactJson = dynamic(() => import("react-json-view"), { ssr: false });
+// const ReactJson = loadable(() => import('react-json-view'));
 
 export default function Home() {
+  const [data, setData] = useState({});
+  const [collapsed, setCollapsed] = useState(true);
+
+  // useEffect(() => {
+  //   setData({});
+  // }, []);
+
+  const handleDataChange = (value: string): void => {
+    try {
+      const jsonValue = JSON.parse(value);
+      setData(jsonValue);
+    } catch (ex) {}
+  };
+
   return (
-    <div>
-      <JsonLegacy></JsonLegacy>
-    </div>
+    <main className="px-6 py-4 h-screen">
+      <div className="grid md:grid-cols-2 gap-4 sm:grid-cols-1">
+        <div className="">
+          <label
+            htmlFor="message"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Input your json here
+          </label>
+          <textarea
+            id="message"
+            // rows={40}
+            style={{ height: "90vh" }}
+            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Paste json here..."
+            onChange={(e) => handleDataChange(e.currentTarget.value)}
+            onInput={(e) => handleDataChange(e.currentTarget.value)}
+          ></textarea>
+        </div>
+        <div className="">
+          <label
+            htmlFor="output"
+            className="block mb-4 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Output formatted json
+            <div className="float-right flex flex-end items-center justify-end gap-x-2">
+              <button
+                type="button"
+                className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={() => setCollapsed(true)}
+              >
+                Collapse
+              </button>
+              <button
+                type="button"
+                className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={() => setCollapsed(false)}
+              >
+                Expand
+              </button>
+            </div>
+          </label>
+          <div>
+            <ReactJson
+              src={data}
+              collapsed={collapsed}
+              theme={"monokai"}
+              displayDataTypes={true}
+              displayObjectSize={true}
+              indentWidth={2}
+              enableClipboard={true}
+            ></ReactJson>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 
   // return (
